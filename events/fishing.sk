@@ -1,6 +1,7 @@
 
 on fish:
-	if fish state is CAUGHT_FISH:
+	if fish state isn't CAUGHT_FISH:
+		exit
 	show sonic boom 1 block infront of player's head
 	set metadata tag "fishing" of last spawned xp to true
 	if chance of 1%:
