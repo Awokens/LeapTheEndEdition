@@ -1,0 +1,21 @@
+
+options:
+	types: "items", "bossbar", "stats" and "deathmessages"
+	{toggleTypes::%player's uuid%::%arg-1%}: false
+	
+command /toggle <string>:
+	trigger:
+		if {@types} doesn't contain arg-1:
+			send "&cInvalid toggleable type"
+			exit
+		
+		if {toggleTypes::%player's uuid%::%arg-1%} ? true is true:
+			set {toggleTypes::%player's uuid%::%arg-1%} to false
+		else:
+			set {toggleTypes::%player's uuid%::%arg-1%} to true
+			
+		send "Toggled &7%arg-1%&f to %{toggleTypes::%player's uuid%::%arg-1%}%"
+
+
+on tab complete of "/toggle":
+	set tab completions for position 1 to {@types}

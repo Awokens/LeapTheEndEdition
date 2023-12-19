@@ -1,0 +1,2 @@
+on death of a wandering trader:
+	drop 1 of emerald at victim

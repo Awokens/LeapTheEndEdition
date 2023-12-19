@@ -1,0 +1,12 @@
+command /nonchest:
+	aliases: /nonners
+	trigger:
+		if {nonchest} isn't set:
+			set {nonchest} to chest inventory with 5 rows named "&8Nonchest"
+		
+		open {nonchest} to player
+		
+on script load:
+	set {nonchest} to chest inventory with 5 rows named "&8Nonchest"
+
+		

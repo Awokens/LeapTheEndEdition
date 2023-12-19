@@ -1,0 +1,13 @@
+on right click with nautilus shell:
+
+	item cooldown of nautilus shell for player <= 0 seconds
+
+	set item cooldown of nautilus shell for player to 1 seconds
+	remove 1 of nautilus shell from player's inventory
+	if player's inventory doesn't have space for stone:
+		exit
+	execute console command "loot give %player% fish minecraft:chests/shipwreck_supply ~ ~ ~"
+	if chance of 25%:
+		give luck potion to player
+	play sound "minecraft:item.brush.brushing.sand" at player
+	make player swing their hand

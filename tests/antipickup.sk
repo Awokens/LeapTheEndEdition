@@ -1,0 +1,30 @@
+command /antipickup:
+    trigger:
+        set {_gui} to chest inventory with 6 rows named "AntiPickup"
+        set {_slot} to 0
+        loop {antipickup::%player's uuid%::*}:
+            set {_item} to type of loop-value
+            {_item}.setItemMeta(null)
+            set slot {_slot} of {_gui} to {_item} with lore "&cClick to remove"
+            add 1 to {_slot}
+        
+        open {_gui} to player
+on inventory click:
+    name of event-inventory is "AntiPickup"
+    cancel event
+    set {_item} to type of event-item
+    {_item}.setItemMeta(null)
+
+    if {antipickup::%player's uuid%::*} contains {_item}:
+        remove {_item} from {antipickup::%player's uuid%::*}
+        make player say "/antipickup"
+    else:
+        add {_item} to {antipickup::%player's uuid%::*}
+        make player say "/antipickup"
+on pickup:
+    if player isn't sneaking:
+        set {_item} to type of event-item
+        {_item}.setItemMeta(null)
+        if {antipickup::%player's uuid%::*} contains {_item}:
+            cancel event
+           # send "&f%{_item}%&7 is blocked by antipickup (&f/antipickup&7)"

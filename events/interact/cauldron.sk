@@ -1,0 +1,40 @@
+import:
+	#org.bukkit.event.block.CauldronLevelChangeEvent
+on CauldronLevelChangeEvent:
+	if event.getReason().toString() is "NATURAL_FILL":
+		event.setCancelled(true)
+
+
+
+on left click on empty cauldron with 64 cobbled deepslate:
+	set {_under} to block below clicked block
+	if {_under} isn't a campfire:
+		exit
+	if block data tag "lit" of {_under} isn't true:
+		exit
+	play sound "minecraft:item.bundle.insert" at clicked block
+	play sound "minecraft:block.grindstone.use" at pitch 0.5 at clicked block
+	remove held item from player's held item
+	
+	set {_i} to 0
+	
+	loop 3600 times:
+		if block at clicked block isn't a empty cauldron:
+			exit
+		set {_under} to block below clicked block
+		if {_under} isn't a campfire:
+			exit
+		if block data tag "lit" of {_under} isn't true:
+			exit	
+		if {_i} > 20:
+			lerp 5 of dust_color_transition using dustTransition(orange, red, 5) at block 0.2 above clicked block with offset vector(0, 1, 0) with extra 0.1
+			set {_i} to 0
+			play sound "minecraft:block.lava.ambient" at clicked block
+			if chance of 25%:
+				play sound "minecraft:block.fire.ambient" at clicked block
+		add 1 to {_i}
+		wait 1 tick
+	play sound "minecraft:block.fire.ambient" at clicked block
+	set clicked block to lava cauldron
+	
+	

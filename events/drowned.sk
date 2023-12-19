@@ -1,0 +1,6 @@
+on spawn of drowned:
+	set event-entity's held item to air
+	set event-entity's off hand item to air
+
+on death of drowned:
+	remove a trident from drops

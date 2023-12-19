@@ -1,0 +1,17 @@
+on shoot:
+	if event-projectile isn't a trident:
+		exit
+	set {_now} to now
+	set {_item} to item of event-projectile
+	while event-projectile is alive:
+	
+		if y-coord of shooter < -64:
+			clear event-projectile
+			give shooter {_item}
+			exit
+	
+		if y-coord of event-projectile < -64:
+			teleport event-projectile to shooter
+		if difference between now and {_now} > 30 seconds:
+			teleport event-projectile to shooter
+		wait 1 tick

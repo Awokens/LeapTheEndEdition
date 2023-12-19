@@ -1,0 +1,5 @@
+on right click with crafting table:
+	if player is sneaking:
+		open crafting table to player
+		make player swing their hand
+		play sound "minecraft:ui.loom.take_result" at volume 0.5 to player

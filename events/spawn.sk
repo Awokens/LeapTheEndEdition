@@ -1,0 +1,56 @@
+options:
+
+	protected: "world", "nether" or "end"
+
+	worldA: location(2.5, -64, 2.5, world("world"))
+	worldB: location(-1.5, -61, -1.5, world("world"))
+
+	netherA: location(2.5, -64, 2.5, world("world_nether"))
+	netherB: location(-1.5, -61, -1.5, world("world_nether"))
+	
+	endA: location(2.5, -64, 2.5, world("world_the_end"))
+	endB: location(-1.5, -61, -1.5, world("world_the_end"))
+
+on script load:
+
+
+
+	delete bound with id "world"
+	delete bound with id "nether"
+	delete bound with id "end"
+	
+	create bound with id "world" between {@worldA} and {@worldB}
+	create bound with id "nether" between {@netherA} and {@netherB}
+	create bound with id "end" between {@endA} and {@endB}
+
+every 10 seconds:
+	loop blocks within {@worldA} and {@worldB}:
+		if loop-block isn't bedrock or air:
+			set loop-block to air
+		wait 1 tick
+	loop blocks within {@netherA} and {@netherB}:
+		if loop-block isn't bedrock or air:
+			set loop-block to air
+		wait 1 tick
+	loop blocks within {@endA} and {@endB}:
+		if loop-block isn't bedrock or air:
+			set loop-block to air
+		wait 1 tick
+
+on target:
+	if target is a player:
+		if bound id at target contains {@protected}:
+			cancel event
+
+on damage of player:
+	exit if damage cause is unknown
+	cancel event if bound id at attacker contains {@protected}
+	cancel event if bound id at victim contains {@protected}
+	
+on place:
+	exit if player's gamemode is creative
+	cancel event if bound id at event-block contains {@protected}
+
+on physics:
+	if bound id at event-block contains {@protected}:
+		cancel event

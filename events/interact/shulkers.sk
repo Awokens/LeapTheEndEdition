@@ -1,0 +1,140 @@
+options:
+    permission: "shulker"
+
+
+
+on player inventory slot change:
+
+	if event-item isn't a shulker box:
+		exit
+	if amount of a shulker box of player's inventory < 2:
+		exit
+	set event-slot to past item
+	set player's cursor slot to air
+	drop event-item at player
+	make player swing their hand
+	set item cooldown for any shulker box for player to 1 second
+	play sound "minecraft:item.bundle.drop_contents" at volume 0.5 to player
+	
+	set {_i} to amount of a shulker box of player's inventory
+	if {_i} < 2:
+		exit
+	set event-slot to air
+	drop event-item at player
+		
+
+on player pickup:
+
+	if item cooldown for any shulker box for player > 0 seconds:
+		cancel event
+		exit
+	if player's cursor slot is any shulker box:
+		cancel event
+
+	else if type of event-item is any shulker box:
+		if player's inventory contains a shulker box:
+			cancel event
+		else if player's cursor slot is a shulker box:
+			cancel event
+	
+	if event isn't cancelled:
+		exit
+	if name of player's inventory is "%player%'s shulker box":
+		close player's inventory
+	
+	
+	set item cooldown for any shulker box for player to 1 seconds
+
+on inventory click:
+	player has permission {@permission}
+	if name of player's inventory isn't "%player%'s shulker box":
+		exit
+	
+	if player's held item isn't any shulker box:
+		cancel event
+	else if slot event.getHotbarButton() of player's inventory is any shulker box:
+		cancel event
+	else if type of event-item is any shulker box:
+		cancel event
+	else if type of event-slot is any shulker box:
+		cancel event
+	
+	if event is cancelled:
+		close player's inventory
+
+on place:
+	player has permission {@permission}
+	if type of event-inventory isn't shulker box inventory:
+		exit
+	if metadata tag "shulker-reason" of player isn't "virtual":
+		exit
+	set {_id} to metadata tag "shulker-id" of player
+	if tag "custom;id" of (nbt of player's held item) isn't {_id}:
+		exit
+	cancel event
+
+on inventory close:
+	player has permission {@permission}
+	if type of event-inventory isn't shulker box inventory:
+		exit
+	if metadata tag "shulker-reason" of player isn't "virtual":
+		exit
+	set {_id} to metadata tag "shulker-id" of player
+	if tag "custom;id" of (nbt of player's held item) isn't {_id}:
+		exit
+	
+	clear metadata tag "shulker-reason" of player
+        
+	set {_item} to player's held item
+	set {_meta} to {_item}.getItemMeta()
+	set {_shulker} to {_meta}.getBlockState()
+	set {_currentinv} to event-inventory
+
+	{_shulker}.getInventory().setContents({_currentinv}.getContents())
+	{_meta}.setBlockState({_shulker})
+	({_item}).setItemMeta({_meta})
+	set held item to {_item}
+	play sound "minecraft:block.shulker_box.close" at player
+	set item cooldown for held item for player to 0.5 seconds
+
+on left click with any shulker box:
+	player has permission {@permission}
+	player is sneaking
+	clicked entity isn't set
+	clicked block isn't any shulker box
+	
+	if item cooldown for held item for player > 0 seconds:
+		exit
+	if name of player's inventory is "%player%'s shulker box":
+		exit
+		
+	set item cooldown for held item for player to 0.5 seconds
+	
+	cancel event
+	set metadata tag "shulker-reason" of player to "virtual"
+	set {_item} to player's held item
+	set {_meta} to {_item}.getItemMeta()
+	set {_shulker} to {_meta}.getBlockState()
+	set {_inventory} to shulker box inventory named "%player%'s shulker box"
+	{_inventory}.setContents({_shulker}.getInventory().getContents())
+	set {_id} to random uuid
+	set tag "custom;id" of (nbt of player's held item) to {_id}
+	set metadata tag "shulker-id" of player to {_id}
+	player.openInventory({_inventory})
+	play sound "minecraft:block.shulker_box.open" at player
+
+on player's held item change:
+	player has permission {@permission}
+	if type of player's current inventory isn't shulker box inventory:
+		exit
+	if metadata tag "shulker-reason" of player isn't "virtual":
+		exit
+	set {_id} to metadata tag "shulker-id" of player
+	if tag "custom;id" of (nbt of player's held item) isn't {_id}:
+		close player's inventory
+		cancel event
+
+on swap hand items:
+	player has permission {@permission}
+	if item cooldown for held item for player > 0 seconds:
+		cancel event

@@ -1,0 +1,21 @@
+options:
+	end: location(0.5, 1, 0.5, world("world_the_end"))
+	world: location(0.5, -63, 0.5, world("world"))
+
+on right click on end portal frame:
+	if block data tag "eye" of clicked block isn't true:
+		exit
+	break clicked block naturally using air
+	show cloud at clicked block
+	execute console command "stopsound @a"
+	teleport player to {@end}
+	create explosion of force 5 at clicked block
+	wait 1 tick
+	play sound "minecraft:block.end_portal.spawn" at volume 0.25 to players
+	wait 1 second
+	play sound "minecraft:music.dragon" at volume 0.5 to player
+
+	
+	
+on portal creation:
+	cancel event

@@ -1,0 +1,104 @@
+options:
+	MAX_TIME: 3 days
+
+on script load:
+
+	loop players of {mapresetBossBar}:
+		remove loop-player from {mapresetBossBar}
+	delete bossbar named "mapreset"
+	set {mapresetBossBar} to bossbar named "mapreset" with title "<##f9f9f9>Next Map Reset: %fancyTimer(seconds of {mapResetTime})%" with color lime with style segmented 20
+	set {_remaining} to seconds of {mapResetTime}
+	set {_max} to seconds of {@MAX_TIME}
+
+	set bossbar progress of {mapresetBossBar} to (100 / {_max} * {_remaining})
+	loop players:
+		if {toggleTypes::%loop-player's uuid%::bossbar} ? true is false:
+			continue
+		add loop-player to bossbar players of {mapresetBossBar}
+	set bossbar visibility of {mapresetBossBar} to true
+
+every second:
+
+	if {mapResetTime} isn't between 0 seconds and {@MAX_TIME}:
+		set {mapResetTime} to {@MAX_TIME}
+	if {mapResetTime} < 1 seconds:
+		set {mapResetTime} to {@MAX_TIME}
+		execute console command "/mapreset Love"
+		exit
+	
+	loop players:
+		if {toggleTypes::%loop-player's uuid%::bossbar} ? true is false:
+			if bossbar players of {mapresetBossBar} contains loop-player:
+				remove loop-player from bossbar players of {mapresetBossBar}
+			continue
+		add loop-player to bossbar players of {mapresetBossBar}
+	if {mapResetTime} <= 10 seconds:
+		send title "%{mapResetTime}%" to players
+		play sound "minecraft:ui.button.click" at pitch 0.5 to players
+	set {_remaining} to seconds of {mapResetTime}
+	set {_max} to seconds of {@MAX_TIME}
+	set bossbar title of {mapresetBossBar} to "<##f9f9f9>Next Map Reset: %fancyTimer(seconds of {mapResetTime})%"
+	set bossbar progress of {mapresetBossBar} to (100 / {_max} * {_remaining})
+	subtract 1 seconds from {mapResetTime}
+
+command /mapreset <string>:
+	permission: *
+	trigger:
+	
+		if sender isn't "Awokens", "MinecraftTheGuy", "Hysteeri" or console:
+			exit
+		if arg-1 isn't "Love":
+			exit
+		loop players:
+			teleport loop-player to location(0.5, -62.5, 0.5, world("test"))
+			wait 1 tick
+		execute console command "stopsound @a"
+		set {_width} to random integer from 100 and 600
+		set {_timespan} to "%{_width} / 20% seconds" parsed as timespan
+
+		execute console command "//world test"
+		execute console command "//pos1 %{_width}%,300,%{_width}%"
+		execute console command "//pos2 -%{_width}%,-64,-%{_width}%"
+		execute console command "//replace !bedrock air"
+		wait 5 ticks
+		execute console command "//confirm"
+		shrink world border of world "test" to {_width} in {_timespan}
+		add 1 to {mapResetCounter}
+		send "Map ##%{mapResetCounter}% @ %{_width}%" to console
+		send title "Happy Fishing." to players
+		play sound "minecraft:entity.player.burp" to players
+		play sound "minecraft:entity.player.splash.high_speed" to players
+
+function fancyTimer(n: number) :: string:
+	set {_days} to floor({_n} / 86400)
+	set {_hours} to floor((({_n} - ({_days} * 86400)) / 3600))
+	set {_minutes} to floor((({_n} - ({_days} * 86400) - ({_hours} * 3600)) / 60))
+	set {_seconds} to floor({_n} - ({_days} * 86400) - ({_hours} * 3600) - ({_minutes} * 60))
+
+	#set {_minutes} to floor({_n} / 60)
+	#set {_seconds} to floor({_n} - ({_minutes} * 60))
+		
+	if {_days} < 1:
+		set {_formattedDays} to ""
+	else:
+		set {_formattedDays} to "%{_days}%:"
+
+	if {_hours} < 10:
+		set {_formattedHours} to "0%{_hours}%"
+	else:
+		set {_formattedHours} to "%{_hours}%"
+
+	if {_minutes} < 10:
+		set {_formattedMinutes} to "0%{_minutes}%"
+	else:
+		set {_formattedMinutes} to "%{_minutes}%"
+
+	if {_seconds} < 10:
+		set {_formattedSeconds} to "0%{_seconds}%"
+	else:
+		set {_formattedSeconds} to "%{_seconds}%"
+
+	
+	set {_formattedDuration} to "%{_formattedDays}%%{_formattedHours}%:%{_formattedMinutes}%:%{_formattedSeconds}%"
+
+	return {_formattedDuration}

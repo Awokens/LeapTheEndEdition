@@ -1,0 +1,7 @@
+command /suicide:
+	aliases: /respawn
+	cooldown: 5 seconds
+	trigger:
+		kill player
+
+

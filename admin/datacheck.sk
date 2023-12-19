@@ -1,0 +1,147 @@
+
+on quit:
+	set tag "custom;offline_position" of nbt of player to player's location
+	
+command /inventorycache <offlineplayer> <boolean=false>:
+	permission: *
+	trigger:
+		set {_id} to arg-1's uuid
+		set {_nbt} to nbt compound of file "world/playerdata/%{_id}%.dat"
+
+		if arg-2 is true:
+			set {_tag} to "EnderItems"
+		else:
+			set {_tag} to "Inventory"
+
+		set {_inv::*} to tag {_tag} of {_nbt}
+		set {_items::*} to items from nbt {_inv::*}
+
+		set {_gui} to chest inventory with 4 rows named "%arg-1%'s offline %{_tag}%"
+
+		loop size of {_items::*} times:
+			set slot (loop-value - 1) of {_gui} to {_items::%loop-value%} ? air
+		
+		send "&aViewing &f&n%{_tag}%&a cache of &f&n%arg-1%"
+		open {_gui} to player
+		
+command /enderchestsnapshots:
+	permission: staff.snapshots
+	trigger:
+		
+		if (metadata tag "enderchestSnapshot" of player) is player's current inventory:
+			set {_gui} to (metadata tag "enderchestSnapshot" of player)
+			set {_bool} to true
+		else:
+			set {_gui} to chest inventory with 6 rows named "Player Enderchests"
+		
+		set {_p::*} to players
+		loop 40 times:
+			set {_p} to {_p::%loop-value%}
+			if {_p} isn't set:
+				set slot (loop-value - 1) of {_gui} to air
+				continue
+			set {_items::*} to tag "EnderItems" of nbt of {_p}
+			set {_items} to "%{_items::*}%"
+			replace "and " with "," in {_items}
+			set {_bundle} to bundle with nbt of "{Items:[%{_items}%]}" named "&f%{_p}'s name%"
+			set slot (loop-value - 1) of {_gui} to {_bundle}
+		if {_bool} is true:
+			exit
+		set metadata tag "enderchestSnapshot" of player to {_gui}
+		open (metadata tag "enderchestSnapshot" of player) to player
+		
+		while (metadata tag "enderchestSnapshot" of player) is player's current inventory:
+			make player execute command "enderchestsnapshots"
+			wait 1 second
+
+
+command /inventorysnapshots:
+	permission: staff.snapshots
+	trigger:
+		
+		if (metadata tag "inventorySnapshot" of player) is player's current inventory:
+			set {_gui} to (metadata tag "inventorySnapshot" of player)
+			set {_bool} to true
+		else:
+			set {_gui} to chest inventory with 6 rows named "Player Inventories"
+		
+		set {_p::*} to players
+		loop 40 times:
+			set {_p} to {_p::%loop-value%}
+			if {_p} isn't set:
+				set slot (loop-value - 1) of {_gui} to air
+				continue
+			set {_items::*} to tag "Inventory" of nbt of {_p}
+			set {_items} to "%{_items::*}%"
+			replace "and " with "," in {_items}
+			set {_bundle} to bundle with nbt of "{Items:[%{_items}%]}" named "&f%{_p}'s name%"
+			set slot (loop-value - 1) of {_gui} to {_bundle}
+		if {_bool} is true:
+			exit
+		set metadata tag "inventorySnapshot" of player to {_gui}
+		open (metadata tag "inventorySnapshot" of player) to player
+		
+		while (metadata tag "inventorySnapshot" of player) is player's current inventory:
+			make player execute command "inventorysnapshots"
+			wait 1 second
+
+on inventory click:
+
+	loop "inventorySnapshot" and "enderchestSnapshot":
+		if (metadata tag loop-value of player) is event-inventory:
+			cancel event
+			exit
+		if (metadata tag loop-value of player) is player's current inventory:
+			cancel event
+			exit
+
+command /inventory <player>:
+	permission: *
+	trigger:
+		open arg-1's inventory to player
+
+
+command /enderchest <player>:
+	permission: *
+	trigger:
+		open arg-1's enderchest to player
+		
+command /shuffleinventory <player>:
+	permission: staff.shuffle
+	trigger:
+		
+		
+		set {_items::*} to slot (integers from 0 and 40) of arg-1's inventory
+		
+		set {_items::*} to shuffled {_items::*}
+		
+		set {_i} to 1
+		loop integers from 0 and 40:
+			set slot loop-value of arg-1's inventory to {_items::%{_i}%}
+			add 1 to {_i}
+		send "Shuffled %arg-1%'s inventory"
+	
+
+	
+command /disenchant <string>:
+	permission: *
+	trigger:
+	
+		set {_type} to arg-1
+		
+		replace "minecraft:" with "" in {_type}
+		replace all "_" with " " in {_type}
+		
+		set {_enchant} to {_type} parsed as enchantment
+		
+		if {_enchant} isn't set:
+			send "&cYou have entered an invalid enchantment type: &f&n%{_enchant}%"
+			exit
+	
+		remove {_enchant} from enchantments of held item
+		send "Removed enchantment &7%{_type} in propercase%&f from held item"
+	
+on tab complete of "/disenchant":
+	set tab completions for position 1 to "minecraft:mending", "minecraft:unbreaking", "minecraft:vanishing_curse", "minecraft:aqua_affinity", "minecraft:blast_protection", "minecraft:binding_curse", "minecraft:depth_strider", "minecraft:feather_falling", "minecraft:fire_protection", "minecraft:frost_walker", "minecraft:projectile_protection", "minecraft:protection", "minecraft:respiration", "minecraft:soul_speed", "minecraft:thorns", "minecraft:swift_sneak", "minecraft:bane_of_arthropods", "minecraft:efficiency", "minecraft:fire_aspect", "minecraft:looting", "minecraft:impaling", "minecraft:knockback", "minecraft:sharpness", "minecraft:smite", "minecraft:sweeping_edge", "minecraft:channeling", "minecraft:flame", "minecraft:infinity", "minecraft:loyalty", "minecraft:riptide", "minecraft:multishot", "minecraft:piercing", "minecraft:power", "minecraft:punch", "minecraft:quick_charge", "minecraft:efficiency", "minecraft:fortune", "minecraft:luck_of_the_sea", "minecraft:lure" and "minecraft:silk_touch"
+
+	

@@ -1,0 +1,33 @@
+
+
+command /antidrop:
+    trigger:
+        set {_gui} to chest inventory with 6 rows named "Antidrop"
+        set {_slot} to 0
+        loop {antidrop::%player's uuid%::*}:
+            set {_item} to type of loop-value
+            {_item}.setItemMeta(null)
+            set slot {_slot} of {_gui} to {_item} with lore "&cClick to remove"
+            add 1 to {_slot}
+        
+        open {_gui} to player
+on inventory click:
+    name of event-inventory is "antidrop"
+    cancel event
+    set {_item} to type of event-item
+    {_item}.setItemMeta(null)
+
+    if {antidrop::%player's uuid%::*} contains {_item}:
+        remove {_item} from {antidrop::%player's uuid%::*}
+        make player say "/antidrop"
+    else:
+        add {_item} to {antidrop::%player's uuid%::*}
+        make player say "/antidrop"
+
+on drop:
+    if player isn't sneaking:
+        set {_item} to type of event-item
+        {_item}.setItemMeta(null)
+        if {antidrop::%player's uuid%::*} contains {_item}:
+            cancel event
+            send "&f%{_item}%&7 is blocked by antidrop (&f/antidrop&7)"

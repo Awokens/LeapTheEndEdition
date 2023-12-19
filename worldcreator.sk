@@ -1,0 +1,11 @@
+command /world <string>:
+	permission: *
+	trigger:
+		if worlds doesn't contain arg-1:
+			send "Invalid world name"
+			exit
+		teleport player to spawn point of world arg-1
+		send "Teleported to world %arg-1%"
+		
+on tab complete of "/world":
+	set tab completions for position 1 to worlds

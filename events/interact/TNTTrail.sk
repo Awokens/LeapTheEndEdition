@@ -1,0 +1,105 @@
+import:
+	org.bukkit.event.block.TNTPrimeEvent
+
+
+function trail(e: entity, o: object = {_e}):
+	if {_o} isn't set:
+		set {_block} to block at {_e}
+	else:
+		set {_block} to block at {_o}
+		
+	loop getConnectedBlocks({_block}):
+		if isValidBlock(loop-block) is true:
+			set {_b} to loop-block
+			exit loop
+	
+	if {_b} isn't set:
+		exit
+	set {_id} to random uuid
+	set {tnt::%{_id}%} to 30
+	set {_owner} to metadata tag "owner" of {_e}
+	if {_owner}'s helmet is a creeper skull:
+		set {tnt::%{_id}%} to 60
+	if metadata tag "power" of {_owner} is "creeper":
+		if {_owner}'s helmet is a dragon head:
+			set {tnt::%{_id}%} to 60
+	subtract 1 from {tnt::%{_id}%}
+	show cloud at {_b}
+	break {_b} naturally using netherite pickaxe
+	run({_b}, {_id})
+
+
+on projectile hit:
+	if event-projectile isn't a large fireball:
+		exit
+	trail(event-projectile, event-block)
+
+on right click with fire charge:
+	if player's held item's name is "&6Fireball":
+		if clicked block is set:
+			exit
+		remove 1 of event-item from player's held item
+		shoot fire ball at speed 0.05
+
+
+on TNTPrimeEvent:
+	set {_e} to event.getPrimingEntity()
+	if {_e} isn't a player:
+		exit
+	wait 1 tick
+	
+	loop all entities:
+		if type of loop-entity is TNT:	
+			set {_tnt} to loop-entity
+		
+	if {_tnt} is set:
+		set metadata tag "owner" of {_tnt} to {_e}
+		
+on explode:
+	event-entity is tnt
+	cancel event
+
+	trail(event-entity)
+
+function isValidBlock(b: location) :: boolean:
+	if block at {_b} is bedrock or barrier:
+		return false
+	if block at {_b} isn't solid:
+		return false
+	return true
+
+function getConnectedBlocks(block: block) :: blocks:
+	add block south of {_block} to {_blocks::*}
+	add block north of {_block} to {_blocks::*}
+	add block east of {_block} to {_blocks::*}
+	add block west of {_block} to {_blocks::*}
+	add block above {_block} to {_blocks::*}
+	add block below {_block} to {_blocks::*}
+	return {_blocks::*}
+
+function run(block: block, id: string):
+	loop getConnectedBlocks({_block}):
+		if {tnt::%{_id}%} ? 0 <= 0:
+			exit
+		if isValidBlock(loop-block) is true:
+
+			if {tnt::%{_id}%} ? 0 <= 0:
+				exit
+			
+			if loop-block is a cobbled deepslate slab:
+				set {_type} to block data tag "type" of loop-block
+				set loop-block to cobblestone slab
+				set block data tag "type" of loop-block to {_type}
+			else if loop-block is tuff:
+				set loop-block to cobblestone
+			else if loop-block is cobbled deepslate:
+				set loop-block to tuff
+			else:
+				break loop-block naturally using netherite pickaxe
+			show cloud at loop-block
+			play sound "minecraft:block.gravel.break" at volume 0.5 at pitch 0.5 at loop-block
+			play sound "minecraft:item.dye.use" at volume 0.5 at pitch 0.5 at loop-block
+
+			subtract 1 from {tnt::%{_id}%}
+			wait 4 ticks
+			run(loop-block, {_id})

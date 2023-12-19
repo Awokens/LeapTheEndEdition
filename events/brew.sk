@@ -1,0 +1,7 @@
+
+on load:
+	register brewing recipe:
+		id: "custom:luck_potion"
+		result: luck potion
+		ingredient: pufferfish
+		input: awkward potion

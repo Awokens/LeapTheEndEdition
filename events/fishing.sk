@@ -1,0 +1,12 @@
+
+on fish:
+	if fish state is CAUGHT_FISH:
+	show sonic boom 1 block infront of player's head
+	set metadata tag "fishing" of last spawned xp to true
+	if chance of 1%:
+		set {_caught} to caught fish
+		spawn elder guardian or guardian at fishing caught entity
+		set (last spawned entity)'s held item to item of {_caught}
+		set item of {_caught} to air
+		show huge explosion at fishing caught entity
+		play sound "minecraft:entity.elder_guardian.curse" at fishing caught entity

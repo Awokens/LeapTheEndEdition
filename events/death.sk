@@ -1,0 +1,22 @@
+options:
+	spawn: location(0.5, -62, 0.5, world("world"), 90, 0)
+
+
+on script load:
+	set spawn point of world "world" to {@spawn}
+
+on death of player:
+	set {_msg} to death message
+	set death message to ""
+	if {toggleTypes::%victim's uuid%::deathmessages} ? true is true:
+		send {_msg} to players
+		
+
+on first join:
+	wait 5 ticks
+	teleport player to {@spawn}
+
+
+on respawn:
+	if player's bed isn't set:
+		set respawn location to {@spawn}

@@ -1,0 +1,45 @@
+
+import:
+	#org.bukkit.event.entity.VillagerCareerChangeEvent
+
+on VillagerCareerChangeEvent:
+	if event.getProfession() is armorer profession or librarian profession:
+		cancel event
+
+on right click on villager:
+	if profession of clicked entity is librarian profession or armorer profession:
+		cancel event
+		set profession of clicked entity to none profession
+
+on spawn of zombie villager:
+	if profession of event-entity is librarian profession or armorer profession:
+		set profession of event-entity to none profession
+
+on right click on zombie nitwit with enchanted golden apple:
+	
+	
+	if clicked entity doesn't have potion effect weakness:
+		exit
+	if metadata tag "godVillager" of clicked entity is true:
+		exit
+	if (clicked entity).isConverting() is true:
+		exit
+	make player swing their hand
+	remove 1 of enchanted golden apple from player's held item
+
+
+	set {_oxidizedCopper} to random integer from 20 and 50
+	set {_phantomMembrane} to random integer from 20 and 50
+	set {_nautilusShell} to random integer from 16 and 32
+	set {_emeraldBlock} to random integer from 16 and 32
+	
+	
+	set {_nbt} to nbt of "{VillagerData:{type:plains,profession:nitwit,level:99},Offers:{Recipes:[{maxUses:1,buy:{id:oxidized_copper,Count:%{_oxidizedCopper}%},buyB:{id:heart_of_the_sea,Count:1},sell:{id:trident,Count:1}},{maxUses:8,buy:{id:phantom_membrane,Count:%{_phantomMembrane}%},buyB:{id:nautilus_shell,Count:%{_nautilusShell}%},sell:{id:shulker_shell,Count:1}},{maxUses:4,buy:{id:emerald_block,Count:%{_emeraldBlock}%},buyB:{id:book,Count:1},sell:{id:enchanted_book,Count:1,tag:{StoredEnchantments:[{id:""minecraft:swift_sneak"",lvl:3s}]}}}]}}"
+	if clicked entity is baby zombie nitwit:
+		spawn baby zombie nitwit at clicked entity's location with nbt {_nbt}
+	else:
+		spawn adult zombie nitwit at clicked entity's location with nbt {_nbt}
+	clear clicked entity
+	(last spawned zombie nitwit).setConversionTime(100)
+
+

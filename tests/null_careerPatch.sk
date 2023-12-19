@@ -1,0 +1,13 @@
+
+on right click on a villager:
+	if clicked entity is a nitwit:
+		exit
+	set {_site::*} to tag "Brain;memories;minecraft:job_site;value;pos" of nbt of clicked entity
+	set {_l} to location({_site::1}, {_site::2}, {_site::3}, world("test"))
+	
+	if tag "VillagerData;level" of nbt of clicked entity > 1:
+		exit
+	
+	if block at {_l} is air:
+		set block at {_l} to air
+		set profession of target entity to none profession
