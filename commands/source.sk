@@ -1,0 +1,5 @@
+command /wikihow:
+	trigger:
+		send "", "Want to learn how this game works?"
+		send "Well take a look straight from the source."
+		send "🐟 <link:https://github.com/Awokens/LeapTheEndEdition>&agithub.com/Awokens/LeapTheEndEdition<reset>" and ""
