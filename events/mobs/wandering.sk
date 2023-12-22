@@ -1,2 +1,2 @@
 on death of a wandering trader:
-	drop 1 of emerald at victim
+	drop 1 of emerald at block 0.5 above victim
