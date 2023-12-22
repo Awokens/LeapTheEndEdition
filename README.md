@@ -1,1 +1,3 @@
-The predecessor of Leap Void Survival Project from 6 months ago. Continued where we left off with quite a modification to the last one. Enjoy reading folks.
+# LEAP: THE END EDITION
+
+The previous version of the Leap Void Survival Project from six months ago is here. We've picked up right where we left off, introducing significant changes to the last iteration. Enjoy the read!
