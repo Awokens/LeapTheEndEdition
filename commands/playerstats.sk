@@ -1,0 +1,46 @@
+command /playerstats <offline player>:
+	trigger:
+		
+		set {_gui} to chest inventory with 5 rows named "&8%arg-1%'s statistics"
+		set metadata tag "playerstats" of player to {_gui}
+		
+		set slot (integers from 0 and 44) of {_gui} to black stained glass pane
+		
+		loop 10, 19 and 28:
+			loop integers from loop-value and (loop-value + 6):
+				set slot loop-value-2 of {_gui} to white stained glass pane
+	
+		set slot 20 of {_gui} to fishing rod named "&b🎣 %fish caught stat for arg-1%"
+
+		set {_advancements::*} to all available advancements
+		loop {_advancements::*}:
+			if advancement progress of loop-value of arg-1 is done:
+				add 1 to {_progress}
+		set slot 21 of {_gui} to writable book named "&6👑 %{_progress}%"
+		
+		set {_timePlayed} to fancyTimer(seconds of time played of arg-1)
+		set slot 22 of {_gui} to clock named "&a⌛ %{_timePlayed}%" 
+		set slot 23 of {_gui} to netherite axe named "&e🪓 %player kills stat for arg-1%"
+		set slot 24 of {_gui} to skeleton skull named "&c☠ %deaths stat for arg-1%"
+		set metadata tag "playerstats" of player to {_gui}
+		open {_gui} to player
+		
+		while player's current inventory is metadata tag "playerstats" of player:
+			set slot 20 of {_gui} to fishing rod named "&b🎣 %fish caught stat for arg-1%"
+			clear {_progress}
+			set {_advancements::*} to all available advancements
+			loop {_advancements::*}:
+				if advancement progress of loop-value of arg-1 is done:
+					add 1 to {_progress}
+			set slot 21 of {_gui} to writable book named "&6👑 %{_progress}%"
+		
+			set {_timePlayed} to fancyTimer(seconds of time played of arg-1)
+			set slot 22 of {_gui} to clock named "&a⌛ %{_timePlayed}%" 
+			set slot 23 of {_gui} to netherite axe named "&e🪓 %player kills stat for arg-1%"
+			set slot 24 of {_gui} to skeleton skull named "&c☠ %deaths stat for arg-1%"
+			wait 1 second
+
+on inventory click:
+	if event-inventory is metadata tag "playerstats" of player:
+		cancel event
+		
