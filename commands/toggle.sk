@@ -1,12 +1,29 @@
 
 options:
 	types: "items", "bossbar", "stats" and "deathmessages"
-	{toggleTypes::%player's uuid%::%arg-1%}: false
-	
+	{toggleTypes::%player's uuid%::%arg-1%}: true
+
 command /toggle <string>:
+	#cooldown: 1 second
 	trigger:
 		if {@types} doesn't contain arg-1:
 			send "&cInvalid toggleable type"
+			exit
+		
+		
+		
+		if arg-1 is "items":
+			set {_gui} to chest inventory with 3 rows named "&8Toggle Items"
+			
+			set {_slots::*} to 11, 12, 14 and 15
+			set {_items::*} to dirt, cobblestone, oak planks and iron nugget
+			set slot (integers from 0 and 26) of {_gui} to black stained glass pane
+			loop size of {_slots::*} times:
+				set {_bool} to {toggleTypes::%player's uuid%::items::%loop-value - 1%} ? true
+				set slot {_slots::%loop-value%} of {_gui} to {_items::%loop-value%} named "&7Mode: &f%{_bool}%"
+			
+			set metadata tag "toggleItems" of player to {_gui}
+			open {_gui} to player
 			exit
 		
 		if {toggleTypes::%player's uuid%::%arg-1%} ? true is true:
@@ -16,6 +33,27 @@ command /toggle <string>:
 			
 		send "Toggled &7%arg-1%&f to %{toggleTypes::%player's uuid%::%arg-1%}%"
 
+on inventory click:
+	if event-inventory isn't metadata tag "toggleItems" of player:
+		exit
+	cancel event
+	set {_slots::*} to 11, 12, 14 and 15
+	set {_index::*} to 0, 1, 2, 3
+	set {_items::*} to dirt, cobblestone, oak planks and iron nugget
+	if {_slots::*} doesn't contain index of event-slot:
+		exit
+	
+	loop size of {_slots::*} times:
+		if index of event-slot is {_slots::%loop-value%}:
+			set {_index} to loop-value - 1
+			exit loop
+	
+	if {toggleTypes::%player's uuid%::items::%{_index}%} ? true is true:
+		set {toggleTypes::%player's uuid%::items::%{_index}%} to false
+	else:
+		set {toggleTypes::%player's uuid%::items::%{_index}%} to true
+	play sound "minecraft:ui.loom.select_pattern" at volume 0.5 to player
+	make player execute command "/toggle items"
 
 on tab complete of "/toggle":
 	set tab completions for position 1 to {@types}

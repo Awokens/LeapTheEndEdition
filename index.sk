@@ -74,6 +74,18 @@ every second:
 
 every 10 seconds:
 	loop players:
-		if {toggleTypes::%loop-player's uuid%::items} ? true is true:
-			give loop-player dirt, cobblestone, oak plank or iron nugget
+		if loop-player's world isn't "world", "world_nether" or "world_the_end":
+			continue
+		delete {_item} and {_roll::*}
+		set {_index::*} to 0, 1, 2, 3
+		set {_items::*} to dirt, cobblestone, oak planks and iron nugget
+		loop size of {_index::*} times:
+			set {_item} to {_items::%loop-value-2%}
+			if {toggleTypes::%loop-player's uuid%::items::%loop-value-2 - 1%} ? true is false:
+				continue
+			add {_item} to {_roll::*}
+		if {_roll::*} isn't set:
+			continue
+		give loop-player random element out of {_roll::*}
+		
 	
