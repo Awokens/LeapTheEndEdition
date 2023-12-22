@@ -1,6 +1,12 @@
 on death of witch:
 	attacker is a player
-	set {_i} to looting level of attacker's held item + 1
-	if chance of {_i}%:
+	if chance of (1 + ((9 / 3) * looting level of attacker's held item))%:
 		cancel drops of items
 		drop nether wart at victim
+
+command /witches:
+	trigger:
+		
+		loop 10 times:
+			if chance of (1 + ((9 / 3) * looting level of player's held item))%:
+				send loop-value
