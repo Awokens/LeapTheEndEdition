@@ -1,11 +1,123 @@
+
+command /adminchest:
+	permission: *
+	trigger:
+		
+		if metadata tag "adminchest" of player is set:
+			open metadata tag "adminchest" of player to player
+			exit
+		set {_gui} to chest inventory with 6 rows named "&8%player%'s admin chest"
+		loop integers from 0 and 53:
+			set {_item} to {adminchest::%player's uuid%::slot::%loop-value%} ? air
+			set slot loop-value of {_gui} to {_item}
+		set metadata tag "adminchest" of player to {_gui}
+		open metadata tag "adminchest" of player to player 
+
+on inventory click:
+	if player's current inventory isn't metadata tag "adminchest" of player:
+		exit
+	loop integers from 0 and 53:
+		set {adminchest::%player's uuid%::slot::%loop-value%} to slot loop-value of event-inventory
+	
+on inventory close:
+	if event-inventory isn't metadata tag "adminchest" of player:
+		exit
+	loop integers from 0 and 53:
+		set {adminchest::%player's uuid%::slot::%loop-value%} to slot loop-value of event-inventory
+	
+
+
 command /world <string>:
 	permission: *
 	trigger:
 		if worlds doesn't contain arg-1:
 			send "Invalid world name"
 			exit
-		teleport player to spawn point of world arg-1
+		teleport player to center of spawn point of world arg-1
 		send "Teleported to world %arg-1%"
+
+command /deleteworld <string>:
+	permission: *
+	usage: &c/deleteworld <world name>
+	trigger:
+		if arg-1 contains "world", "world_nether" or "world_the_end":
+			send "&cYou cannot delete main worlds"
+			exit
 		
+		if world arg-1 doesn't exist:
+			send "&cThis world doesn't exist"
+			exit
+		
+		send "&eDeleting world"
+		unload world arg-1
+		delete world file for world arg-1
+		if world arg-1 exists:
+			send "&cFailed to delete world"
+			exit
+		send "&aSuccessfully deleted world"
+
+on tab complete of "/deleteworld":
+	loop worlds:
+		if world is "world", "world_nether" or "world_the_end":
+			continue
+		add world to {_worlds::*}
+	
+	if size of {_worlds::*} < 1:
+		set tab completions for position 1 to "No worlds to delete :("
+	else:
+		set tab completions for position 1 to {_worlds::*}
+
 on tab complete of "/world":
 	set tab completions for position 1 to worlds
+
+
+command /createworld <string> <world type> <environment> <boolean> <boolean>:
+	permission: *
+	usage: /createworld <world name> <world type> <environment type> <generate structures>
+	cooldown: 1 second
+	trigger:
+		
+		if world arg-1 exists:
+			send "&cThis world name is already taken"
+			exit
+		
+		create new section with {_name}, {_worldType}, {_environment}, {_isVoid}, {_generateStructures} and store it in {_section}:
+
+			set {_w} to world creator named {_name}
+			if {_isVoid} is true:
+				set {_generateStructures} to false
+				set generator settings of {_w} to "{""biome"": ""minecraft:plains"",""layers"": []}}"
+				set world type of {_w} to flat
+			else:
+				set world type of {_w} to {_worldType}
+			set environment option of {_w} to {_environment}
+			set should generate structures of {_w} to {_generateStructures}
+			load world from {_w}
+		
+
+		
+		send "&eCreating world"
+		run section {_section} sync with (arg-1, arg-2, arg-3, arg-4, arg-5) and wait
+		
+		if arg-4 is true:
+			set {_spawn} to spawn point of world arg-1
+			set block at {_spawn} to bedrock
+			set spawn point of world arg-1 to block above {_spawn}
+			set gamerule keepInventory of world arg-1 to true
+		send "&aSuccessfully created new world. Do &f/world %arg-1%"
+
+		
+
+
+on tab complete of "/createworld":
+	set tab completions for position 1 to "Enter world name here"
+	set tab completions for position 2 to world types
+	set tab completions for position 3 to environments
+	set tab completions for position 4 to "Should world be void? True or False"
+	set tab completions for position 5 to "Should world generate structures? True or False"
+
+	
+
+		
+	
+		
