@@ -56,7 +56,7 @@ command /enderchestsnapshots:
 
 
 command /inventorysnapshots:
-	permission: staff.snapshots
+	#permission: staff.snapshots
 	trigger:
 		
 		if (metadata tag "inventorySnapshot" of player) is player's current inventory:
