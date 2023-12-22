@@ -50,14 +50,15 @@ command /mapreset <string>:
 		if arg-1 isn't "Love":
 			exit
 		loop players:
-			teleport loop-player to location(0.5, -62.5, 0.5, world("test"))
-			wait 1 tick
+			if loop-player's world is "world":
+				teleport loop-player to location(0.5, -62.5, 0.5, world("world"))
+				wait 1 tick
 		execute console command "stopsound @a"
 		set {_width} to random integer from 100 and 600
 		set {_timespan} to "%{_width} / 20% seconds" parsed as timespan
 
-		execute console command "//world test"
-		execute console command "//pos1 %{_width}%,300,%{_width}%"
+		execute console command "//world world"
+		execute console command "//pos1 %{_width}%,320,%{_width}%"
 		execute console command "//pos2 -%{_width}%,-64,-%{_width}%"
 		execute console command "//replace !bedrock air"
 		wait 5 ticks
