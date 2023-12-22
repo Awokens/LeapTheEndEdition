@@ -25,9 +25,11 @@ on inventory click:
         make player say "/antidrop"
 
 on drop:
-    if player isn't sneaking:
-        set {_item} to type of event-item
-        {_item}.setItemMeta(null)
-        if {antidrop::%player's uuid%::*} contains {_item}:
-            cancel event
-            send "&f%{_item}%&7 is blocked by antidrop (&f/antidrop&7)"
+	player isn't sneaking
+	set {_item} to type of event-item
+	{_item}.setItemMeta(null)
+	{antidrop::%player's uuid%::*} contains {_item}
+	if player's inventory doesn't have space for event-item:
+		exit
+	cancel event
+	send "&f%{_item}%&7 is blocked by antidrop (&f/antidrop&7)"
