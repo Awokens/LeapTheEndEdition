@@ -16,13 +16,7 @@ function trail(e: entity, o: object = {_e}):
 	if {_b} isn't set:
 		exit
 	set {_id} to random uuid
-	set {tnt::%{_id}%} to 30
-	set {_owner} to metadata tag "owner" of {_e}
-	if {_owner}'s helmet is a creeper skull:
-		set {tnt::%{_id}%} to 60
-	if metadata tag "power" of {_owner} is "creeper":
-		if {_owner}'s helmet is a dragon head:
-			set {tnt::%{_id}%} to 60
+	set {tnt::%{_id}%} to 90
 	subtract 1 from {tnt::%{_id}%}
 	show cloud at {_b}
 	break {_b} naturally using netherite pickaxe
