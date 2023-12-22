@@ -1,4 +1,8 @@
 on load:
+
+	loop custom recipes:
+		remove custom recipe loop-value
+
 	# shapeless
 	set {_powder} to firework star named "&fBlack Powder"
 	register new shaped recipe for reinforced deepslate using iron ingot, cobbled deepslate, iron ingot, iron ingot, cobbled deepslate, iron ingot, iron ingot, cobbled deepslate and iron ingot with id "custom:reinforced_deepslate"
@@ -9,11 +13,12 @@ on load:
 	register new shaped recipe for eye of ender using air, air, blaze powder, air, heart of the sea, air, ender pearl, air and air with id "minecraft:ender_eye"
 	register new shaped recipe for tuff using cobblestone, cobblestone, cobblestone, cobblestone, cobblestone, cobblestone, cobblestone, cobblestone and cobblestone with id "custom:tuff"
 	register new shaped recipe for cobbled deepslate using tuff, tuff, tuff, tuff, tuff, tuff, tuff, tuff and tuff with id "custom:cobbled_deepslate"
-	register new shaped recipe for 9 tuff using cobbled deepslate with id "custom:retract_tuff"
-	register new shaped recipe for 9 cobblestone using tuff with id "custom:retract_cobblestone"
-	register new shapeless recipe for 4 string using white wool, air, air, air, air, air, air, air and air with id "custom:white_wool"
+	register new shapeless recipe for 9 tuff using cobbled deepslate with id "custom:retract_tuff"
+	register new shapeless recipe for 9 cobblestone using tuff with id "custom:retract_cobblestone"
+	register new shapeless recipe for 4 string using white wool with id "custom:white_wool"
 
 	# shaped
+	register new shaped recipe for cobweb using string, slime ball, string, slime ball, string, slime ball, string, slime ball and string with id "custom:cobweb"
 	register new shaped recipe for dragon head using piglin head, air, wither skeleton skull, skeleton skull, dragon egg, creeper skull, air, zombie skull and air with id "custom:dragon_head"
 	register new shaped recipe for {test} using nether brick item, nether brick item, nether brick item, nether brick item, diamond, nether brick item, nether brick item, book and nether brick item with id "custom:netherite_upgrade_smithing_template"
 	register new shaped recipe for leather using rotten flesh, rotten flesh, rotten flesh, rotten flesh, rotten flesh, rotten flesh, rotten flesh, rotten flesh and rotten flesh with id "custom:leather"
@@ -21,7 +26,6 @@ on load:
 	register new shaped recipe for enchanted golden apple using gold block, gold block, gold block, gold block, apple, gold block, gold block, gold block and gold block with id "custom:enchanted_golden_apple"
 	
 	# furnace recipes
-	register new furnace recipe for obsidian using crying obsidian with id "furnace:crying_obsidian"
 	register new furnace recipe for cooked beef using rotten flesh with id "furnace:cooked_beef"
 	register new furnace recipe for 5 gold nuggets using golden helmet with id "furnace:gold_helmet_nuggets"
 	register new furnace recipe for 8 gold nuggets using golden chestplate with id "furnace:gold_chestplate_nuggets"
@@ -38,13 +42,34 @@ on load:
 		set {_type} to recipe type of recipe with id {_id}
 		continue if {_type} isn't shaped recipe or shapeless recipe
 		set {_result} to result of recipe {_id}
+		set tag "custom;id" of nbt of {_result} to {_id}
 		set slot {_i} of {recipesGUI} to {_result}
+
 		add 1 to {_i}
+	
+	set {_i} to 0
+	set {furnaceGUI} to chest inventory with 6 rows named "&8Furnace Recipes"
+	loop size of {_custom::*} times:
+		set {_id} to {_custom::%loop-value%}
+		set {_type} to recipe type of recipe with id {_id}
+		continue if {_type} isn't furnace recipe
+		set {_result} to first element of ingredients for recipe {_id}
+		set tag "custom;id" of nbt of {_result} to {_id}
+		set slot {_i} of {furnaceGUI} to {_result}
+
+		add 1 to {_i}
+
+command /furnaces:
+	trigger:
+		set (metadata tag "furnaces" of player) to {furnaceGUI}
+		open (metadata tag "furnaces" of player) to player
 
 command /recipes:
 	trigger:
 		set (metadata tag "recipes" of player) to {recipesGUI}
 		open (metadata tag "recipes" of player) to player
+
+# CRAFT
 
 on inventory click:
 	set {_inv} to (metadata tag "recipe" of player)
@@ -54,6 +79,7 @@ on inventory click:
 	cancel event
 	index of event-slot is 42
 	make player execute command "recipes"
+
 
 on inventory click:
 	set {_inv} to (metadata tag "recipes" of player)
@@ -77,3 +103,38 @@ on inventory click:
 	set slot 42 of {_gui} to red dye named "&cGo Back"
 	set (metadata tag "recipe" of player) to {_gui}
 	open (metadata tag "recipe" of player) to player
+
+#
+# FURNACE
+#
+
+on inventory click:
+	set {_inv} to (metadata tag "furnace" of player)
+	if name of event-inventory is name of {_inv}:
+		cancel event
+	event-inventory is {_inv}
+	cancel event
+	index of event-slot is 42
+	make player execute command "furnaces"
+
+on inventory click:
+	set {_inv} to (metadata tag "furnaces" of player)
+	if name of event-inventory is name of {_inv}:
+		cancel event
+	event-inventory is {_inv}
+	cancel event
+	index of event-slot is between 0 and 44
+	event-slot isn't air
+	set {_gui} to chest inventory with 5 rows named "&8Furnace Recipe" 
+	
+	set slot (integers from 0 and 44) of {_gui} to gray stained glass pane
+	set slot (10, 11, 12, 19, 21, 28, 29 and 30) of {_gui} to black stained glass pane
+	set slot (14, 15, 16, 23, 25, 32, 33 and 34) of {_gui} to black stained glass pane
+	set slot 20 of {_gui} to event-slot
+	set slot 22 of {_gui} to furnace
+	set slot 24 of {_gui} to result of recipe (tag "custom;id" of nbt of event-slot)
+	set slot 42 of {_gui} to red dye named "&cGo Back"
+	set (metadata tag "furnace" of player) to {_gui}
+	open (metadata tag "furnace" of player) to player
+
+
