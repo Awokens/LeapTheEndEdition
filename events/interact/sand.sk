@@ -1,21 +1,39 @@
+on consume of water bottle:
+
+	if target block is clay block or mud:
+		if distance between target block and player < 4:
+			cancel event
+
+on right click on dirt with water bottle:
+	if item cooldown for glass bottle for player > 0 seconds:
+		exit
+	set item cooldown for glass bottle for player to 0.5 second
+	play sound "minecraft:block.gravel.break" at volume 0.5 at pitch 0.5 at clicked block
+	play sound "minecraft:item.dye.use" at volume 0.5 at pitch 0.5 at clicked block	
+	
 
 on right click on mud with water bottle:
 
-	if item cooldown for water bottle for player > 0 seconds:
+	if item cooldown for glass bottle for player > 0 seconds:
 		exit
-	set item cooldown for water bottle for player to 0.25 second
+	set item cooldown for glass bottle for player to 0.5 second
+	remove 1 of held item from player's held item
 	set player's held item to glass bottle
 	set clicked block to clay block
 	play sound "minecraft:item.bottle.empty" at player
-	#make player swing their hand
-
+	make player swing their hand
+	play sound "minecraft:block.gravel.break" at volume 0.5 at pitch 0.5 at clicked block
+	play sound "minecraft:item.dye.use" at volume 0.5 at pitch 0.5 at clicked block
 
 on right click on clay block with water bottle:
 
-	if item cooldown for water bottle for player > 0 seconds:
+	if item cooldown for glass bottle for player > 0 seconds:
 		exit
-	set item cooldown for water bottle for player to 0.25 second
+	set item cooldown for glass bottle for player to 0.5 second
+	remove 1 of held item from player's held item
 	set player's held item to glass bottle
 	set clicked block to sand
 	play sound "minecraft:item.bottle.empty" at player
-	#make player swing their hand
+	make player swing their hand
+	play sound "minecraft:block.gravel.break" at volume 0.5 at pitch 0.5 at clicked block
+	play sound "minecraft:item.dye.use" at volume 0.5 at pitch 0.5 at clicked block
