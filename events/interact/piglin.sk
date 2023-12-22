@@ -1,3 +1,20 @@
+import:
+	org.bukkit.event.entity.PiglinBarterEvent
+	org.bukkit.Material
+
+on PiglinBarterEvent:
+	set {_items} to event.getOutcome().iterator()
+	while {_items}.hasNext():
+		set {_item} to {_items}.next()
+		if {_item}.getType() is Material.OBSIDIAN:
+			{_items}.remove()
+		if {_item}.getType() is Material.CRYING_OBSIDIAN:
+			{_items}.remove()
+
+
+on spawn of piglin:
+	cancel event if "%event-spawnreason%" isn't "command" or "customized"
+
 on right click on adult zombified piglin with enchanted golden apple:
 
 	event-entity has potion effect strength
