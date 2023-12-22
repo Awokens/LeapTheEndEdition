@@ -10,7 +10,8 @@ on death of player:
 	set death message to ""
 	if {toggleTypes::%victim's uuid%::deathmessages} ? true is true:
 		send {_msg} to players
-		
+
+
 
 on first join:
 	wait 5 ticks
@@ -18,5 +19,8 @@ on first join:
 
 
 on respawn:
+	#if player is "Adrickgaming":
+		#teleport player to location(-17, -52, -37, world("world"))
+		#exit
 	if player's bed isn't set:
 		set respawn location to {@spawn}
