@@ -1,6 +1,9 @@
 command /nonchest:
 	aliases: /nonners
 	trigger:
+		if player's world isn't "world":
+			send "&cYou must be in the overworld to do this."
+			exit
 		if {nonchest} isn't set:
 			set {nonchest} to chest inventory with 5 rows named "&8Nonchest"
 		
